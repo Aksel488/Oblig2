@@ -18,7 +18,19 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
 
     public static void main(String[] args) {
-        System.out.println("Hello");
+
+        Liste<String> liste = new DobbeltLenketListe<>(new String[] {"Hello ", "World", "!"});
+
+        System.out.println("antall noder i listen : "+ liste.antall());
+        System.out.println("hode : "+ ((DobbeltLenketListe<String>) liste).hode.verdi);
+        System.out.println("hale : "+ ((DobbeltLenketListe<String>) liste).hale.verdi);
+
+        System.out.println();
+
+        System.out.println(((DobbeltLenketListe<String>) liste).hode.verdi +
+                ((DobbeltLenketListe<String>) liste).hode.neste.verdi +
+                ((DobbeltLenketListe<String>) liste).hode.neste.neste.verdi);
+
     }
 
     /**
@@ -38,6 +50,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         private Node(T verdi) {
             this(verdi, null, null);
         }
+
     }
 
     // instansvariabler
@@ -46,12 +59,42 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     private int antall;            // antall noder i listen
     private int endringer;         // antall endringer i listen
 
-    public DobbeltLenketListe() {
-        throw new NotImplementedException();
+
+    public DobbeltLenketListe() {   //Tom liste konstruktør
+        hode = null;
+        hale = null;
+
+        antall = 0;
+        endringer = 0;
     }
 
-    public DobbeltLenketListe(T[] a) {
-        throw new NotImplementedException();
+    public DobbeltLenketListe(T[] a) {  //Konstruktør
+        Objects.requireNonNull(a);
+
+        if (a.length > 0) {
+            int i = 0;
+            for (; i < a.length; i++) { //finner første ikke null element og lager hode
+                if (a[i] != null) {
+
+                    hode = new Node<>(a[i]);
+                    antall++;
+                    break;
+                }
+            }
+
+            hale = hode;
+            if (hode != null) {     //Lager resten av listen
+                i++;
+                for (; i < a.length; i++) {
+                    if (a[i] != null) {
+
+                        hale.neste = new Node<>(a[i], hale, null);
+                        hale = hale.neste;
+                        antall++;
+                    }
+                }
+            }
+        }
     }
 
     public Liste<T> subliste(int fra, int til){
@@ -60,12 +103,16 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public int antall() {
-        throw new NotImplementedException();
+        return antall;
     }
 
     @Override
     public boolean tom() {
-        throw new NotImplementedException();
+        if (hode == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
