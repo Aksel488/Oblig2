@@ -138,7 +138,35 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public void leggInn(int indeks, T verdi) {
-        throw new NotImplementedException();
+        Objects.requireNonNull(verdi);
+
+        if (indeks < 0) throw new IndexOutOfBoundsException("Indeks er negativ");
+        else if (indeks > antall)
+            throw new IndexOutOfBoundsException("Kan ikke ha større indeks enn antall noder");
+
+        if (antall == 0 && indeks == 0) hode = hale = new Node<T>(verdi, null, null);
+
+        //Verdien skal legges først
+        else if (indeks == 0) {
+            hode = new Node<T>(verdi, null, hode);
+            hode.neste.forrige = hode;
+        }
+        //Verdien skal legges sist
+        else if (indeks == antall) {
+            hale = new Node<T>(verdi, hale, null);
+            hale.forrige.neste = hale;
+        }
+        //Verdien legges i midten
+        else {
+            Node<T> node = hode;
+            for (int i = 0; i < indeks; i++) {
+                node = node.neste;
+            }
+            node = new Node<T>(verdi, node.forrige, node);
+            node.neste.forrige = node.forrige.neste = node;
+        }
+        antall++;
+        endringer++;
     }
 
     @Override
@@ -163,12 +191,93 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public boolean fjern(T verdi) {
-        throw new NotImplementedException();
+        if (verdi == null) return false;
+
+        Node<T> gjeldendeNode = hode;
+
+        while (gjeldendeNode != null) {
+            if (gjeldendeNode.verdi.equals(verdi)) {
+                break;
+            }
+
+            gjeldendeNode = gjeldendeNode.neste;
+        }
+
+        if (gjeldendeNode == null) return false;
+
+        if (gjeldendeNode == hode) { // Første node
+            hode = hode.neste;
+
+            if (hode != null) {
+                hode.forrige = null;
+            } else {
+                hale = null;
+            }
+        } else if (gjeldendeNode == hale) { // Siste node
+            hale = hale.forrige;
+            hale.neste = null;
+        } else {
+            gjeldendeNode.forrige.neste = gjeldendeNode.neste;
+            gjeldendeNode.neste.forrige = gjeldendeNode.forrige;
+        }
+
+        gjeldendeNode.verdi = null;
+        gjeldendeNode.forrige = gjeldendeNode.neste = null;
+
+        antall--;
+        endringer++;
+
+        return true;
+    }
+
+    private Node<T> finnNode(int indeks) {
+        Node<T> returnNode;
+
+        if (indeks < antall / 2) {
+            returnNode = hode;
+            for (int i = 0; i < indeks; i++) returnNode = returnNode.neste;
+        } else {
+            returnNode = hale;
+            for (int i = antall - 1; i > indeks; i--) returnNode = returnNode.forrige;
+        }
+
+        return returnNode;
+    }
+
+    private void indeksKontroll(int indeks) {
+        if (indeks < 0) {
+            throw new IndexOutOfBoundsException("Indeks " + indeks + " er negativ!");
+        } else if (indeks >= antall) {
+            throw new IndexOutOfBoundsException("Indeks " + indeks + " >= antall(" + antall + ") noder!");
+        }
     }
 
     @Override
     public T fjern(int indeks) {
-        throw new NotImplementedException();
+        indeksKontroll(indeks);
+        Node<T> temp;
+
+        if (indeks == 0) { // Første node
+            temp = hode;
+            hode = hode.neste;
+            hode.forrige = null;
+        } else if (indeks == antall - 1) { // Siste node
+            temp = hale;
+            hale = hale.forrige;
+            hale.neste = null;
+        } else {
+            Node<T> p = finnNode(indeks - 1);
+
+            temp = p.neste;
+
+            p.neste = p.neste.neste;
+            p.neste.forrige = p;
+        }
+
+
+        antall--;
+        endringer++;
+        return temp.verdi;
     }
 
     @Override
