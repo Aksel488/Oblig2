@@ -19,18 +19,12 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     public static void main(String[] args) {
 
-        Liste<String> liste = new DobbeltLenketListe<>(new String[] {"Hello ", "World", "!"});
+        Liste<Integer> liste = new DobbeltLenketListe<>();
+        liste.leggInn(1);
+        liste.leggInn(2);
+        liste.leggInn(3);
 
-        System.out.println("antall noder i listen : "+ liste.antall());
-        System.out.println("hode : "+ ((DobbeltLenketListe<String>) liste).hode.verdi);
-        System.out.println("hale : "+ ((DobbeltLenketListe<String>) liste).hale.verdi);
-
-        System.out.println();
-
-        System.out.println(((DobbeltLenketListe<String>) liste).hode.verdi +
-                ((DobbeltLenketListe<String>) liste).hode.neste.verdi +
-                ((DobbeltLenketListe<String>) liste).hode.neste.neste.verdi);
-
+        System.out.println(liste.toString());
     }
 
     /**
@@ -69,7 +63,10 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
 
     public DobbeltLenketListe(T[] a) {  //Konstruktør
-        Objects.requireNonNull(a);
+
+        if (a == null) {
+            throw new NullPointerException();
+        }
 
         if (a.length > 0) {
             int i = 0;
@@ -117,7 +114,26 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public boolean leggInn(T verdi) {
-        throw new NotImplementedException();
+        Objects.requireNonNull(verdi);
+
+        Node<T> nyNode = new Node<>(verdi);
+
+        if (hode == null && hale == null && antall == 0) { //Tilfelle 1 : tom liste
+            hode = nyNode;
+            hale = hode;
+
+            endringer++;
+            antall++;
+            return true;
+        } else {   //Tilfelle 2 : ikke tom liste
+            nyNode.forrige = hale;
+            hale.neste = nyNode;
+            hale = nyNode;
+
+            endringer++;
+            antall++;
+            return true;
+        }
     }
 
     @Override
@@ -162,11 +178,49 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public String toString() {
-        throw new NotImplementedException();
+
+        Node<T> current = hode;
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        if (tom()) {
+            sb.append("]");
+            return sb.toString();
+        } else {
+            sb.append(current.verdi);
+            current = current.neste;
+            while (current != null) {
+                sb.append(", ");
+                sb.append(current.verdi);
+                current = current.neste;
+            }
+        }
+        sb.append("]");
+
+        return sb.toString();
     }
 
     public String omvendtString() {
-        throw new NotImplementedException();
+
+        Node<T> current = hale;
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        if (tom()) {
+            sb.append("]");
+            return sb.toString();
+        } else {
+            sb.append(current.verdi);
+            current = current.forrige;
+            while (current != null) {
+                sb.append(", ");
+                sb.append(current.verdi);
+                current = current.forrige;
+            }
+        }
+        sb.append("]");
+
+        return sb.toString();
     }
 
     @Override
