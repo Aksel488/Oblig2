@@ -208,7 +208,15 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public int indeksTil(T verdi) {
-        throw new NotImplementedException();
+         if (verdi == null) return -1;
+
+         Node <T> p=hode;
+        for (int i = 0; i< antall; i++, p = p.neste)
+        {
+            if (p.verdi.equals(verdi)) return i;
+        }
+
+        return -1;
     }
 
     @Override
