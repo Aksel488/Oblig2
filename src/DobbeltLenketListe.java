@@ -19,12 +19,13 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     public static void main(String[] args) {
 
-        Liste<Integer> liste = new DobbeltLenketListe<>();
-        liste.leggInn(1);
-        liste.leggInn(2);
-        liste.leggInn(3);
+        Character[] c = {'A','B','C','D','E','F','G','H','I','J',};
+        DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
+        System.out.println(liste.subliste(3,8)); // [D, E, F, G, H]
+        System.out.println(liste.subliste(5,5)); // []
+        System.out.println(liste.subliste(8,liste.antall())); // [I, J]
+        System.out.println(liste.subliste(0,11));
 
-        System.out.println(liste.toString());
     }
 
     /**
@@ -95,7 +96,35 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
 
     public Liste<T> subliste(int fra, int til){
-        throw new NotImplementedException();
+
+        fratilKontroll(antall, fra, til);
+
+        Liste<T> liste = new DobbeltLenketListe<>();
+        int lengde = til - fra;
+
+        if (lengde < 1) {
+            return liste;
+        }
+
+        Node<T> current = finnNode(fra);
+
+        while (lengde > 0) {
+            liste.leggInn(current.verdi);
+            current = current.neste;
+            lengde--;
+        }
+
+        return liste;
+    }
+
+    //Hjelpemetode
+    private void fratilKontroll(int tabLengde, int fra, int til) {
+        if (fra < 0 || til > tabLengde) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (fra > til) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
@@ -136,6 +165,29 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         }
     }
 
+    //Hjelpemetode
+    private Node<T> finnNode(int indeks) {
+
+        indeksKontroll(indeks, false);
+
+        Node<T> current;
+
+        if (indeks < antall / 2) { //Søker fra hode
+            current = hode;
+            for (int i = 0; i < indeks; i++) {
+                current = current.neste;
+            }
+            return current;
+
+        } else { //Søker fra hale
+            current = hale;
+            for (int i = antall - 1; i > indeks; i--) {
+                current = current.forrige;
+            }
+            return current;
+        }
+    }
+
     @Override
     public void leggInn(int indeks, T verdi) {
         throw new NotImplementedException();
@@ -148,7 +200,10 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public T hent(int indeks) {
-        throw new NotImplementedException();
+
+        Node<T> current = finnNode(indeks);
+
+        return current.verdi;
     }
 
     @Override
@@ -158,7 +213,17 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public T oppdater(int indeks, T nyverdi) {
-        throw new NotImplementedException();
+
+        Objects.requireNonNull(nyverdi);
+
+        Node<T> current = finnNode(indeks);
+
+        T gammelVerdi = current.verdi;
+        endringer++;
+
+        current.verdi = nyverdi;
+
+        return gammelVerdi;
     }
 
     @Override
