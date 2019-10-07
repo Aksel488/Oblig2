@@ -19,13 +19,15 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     public static void main(String[] args) {
 
-        Character[] c = {'A','B','C','D','E','F','G','H','I','J',};
+        Character[] c = {'A','B','C','D','E','F','G','H','I','J'};
         DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
-        System.out.println(liste.subliste(3,8)); // [D, E, F, G, H]
-        System.out.println(liste.subliste(5,5)); // []
-        System.out.println(liste.subliste(8,liste.antall())); // [I, J]
-        System.out.println(liste.subliste(0,11));
 
+        System.out.println(liste.fjern(0));
+        System.out.println(liste.fjern(2));
+        System.out.println(liste.fjern(liste.antall - 1));
+
+        System.out.println(liste.toString());
+        System.out.println(liste.omvendtString());
     }
 
     /**
@@ -228,12 +230,93 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public boolean fjern(T verdi) {
-        throw new NotImplementedException();
+        if (verdi == null) {
+            return false;
+        }
+
+        Node<T> current = hode;
+
+        //Første fjernes
+        if (verdi.equals(current.verdi)) {
+            if (current.neste != null) {
+                hode = current.neste;
+                hode.forrige = null;
+            } else {
+                hode = null;
+                hale = null;
+            }
+            antall--;
+            endringer++;
+            return true;
+        }
+
+        //Siste fjernes
+        current = hale;
+        if (verdi.equals(current.verdi)) {
+            hale = current.forrige;
+            hale.neste = null;
+            antall--;
+            endringer++;
+            return true;
+        }
+
+        //Mellom fjernes
+        current = hode.neste;
+        for (; current != null; current = current.neste) {
+            if (verdi.equals(current.verdi)) {
+                current.forrige.neste = current.neste;  //Noden til venstre for current peker på noden til høyre
+                current.neste.forrige = current.forrige;//Noden til høyre for current peker på noden til venstre
+                antall--;
+                endringer++;
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public T fjern(int indeks) {
-        throw new NotImplementedException();
+        indeksKontroll(indeks, false);
+
+        Node<T> current = hode;
+        T verdi;
+
+        //Første fjernes
+        if (indeks == 0) {
+            verdi = current.verdi;
+
+            if (current.neste != null) {
+                hode = current.neste;
+                hode.forrige = null;
+            } else {
+                hode = null;
+                hale = null;
+            }
+        }
+
+        //Siste fjernes
+        else if (indeks == antall - 1) {
+            current = hale;
+            verdi = hale.verdi;
+
+            hale = current.forrige;
+            hale.neste = null;
+        }
+
+        //Mellom fjernes
+        else {
+            for (int i = 0; i < indeks; i++) {
+                current = current.neste;
+            }
+            verdi = current.verdi;
+
+            current.forrige.neste = current.neste;  //Noden til venstre for current peker på noden til høyre
+            current.neste.forrige = current.forrige;//Noden til høyre for current peker på noden til venstre
+        }
+
+        antall--;
+        endringer++;
+        return verdi;
     }
 
     @Override
