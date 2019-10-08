@@ -19,12 +19,15 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     public static void main(String[] args) {
 
-        Liste<Integer> liste = new DobbeltLenketListe<>();
-        liste.leggInn(1);
-        liste.leggInn(2);
-        liste.leggInn(3);
+        Character[] c = {'A','B','C','D','E','F','G','H','I','J'};
+        DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
+
+        System.out.println(liste.fjern(0));
+        System.out.println(liste.fjern(2));
+        System.out.println(liste.fjern(liste.antall - 1));
 
         System.out.println(liste.toString());
+        System.out.println(liste.omvendtString());
     }
 
     /**
@@ -95,7 +98,35 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
 
     public Liste<T> subliste(int fra, int til){
-        throw new NotImplementedException();
+
+        fratilKontroll(antall, fra, til);
+
+        Liste<T> liste = new DobbeltLenketListe<>();
+        int lengde = til - fra;
+
+        if (lengde < 1) {
+            return liste;
+        }
+
+        Node<T> current = finnNode(fra);
+
+        while (lengde > 0) {
+            liste.leggInn(current.verdi);
+            current = current.neste;
+            lengde--;
+        }
+
+        return liste;
+    }
+
+    //Hjelpemetode
+    private void fratilKontroll(int tabLengde, int fra, int til) {
+        if (fra < 0 || til > tabLengde) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (fra > til) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
@@ -136,148 +167,165 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         }
     }
 
+    //Hjelpemetode
+    private Node<T> finnNode(int indeks) {
+
+        indeksKontroll(indeks, false);
+
+        Node<T> current;
+
+        if (indeks < antall / 2) { //Søker fra hode
+            current = hode;
+            for (int i = 0; i < indeks; i++) {
+                current = current.neste;
+            }
+            return current;
+
+        } else { //Søker fra hale
+            current = hale;
+            for (int i = antall - 1; i > indeks; i--) {
+                current = current.forrige;
+            }
+            return current;
+        }
+    }
+
     @Override
     public void leggInn(int indeks, T verdi) {
-        Objects.requireNonNull(verdi);
-
-        if (indeks < 0) throw new IndexOutOfBoundsException("Indeks er negativ");
-        else if (indeks > antall)
-            throw new IndexOutOfBoundsException("Kan ikke ha større indeks enn antall noder");
-
-        if (antall == 0 && indeks == 0) hode = hale = new Node<T>(verdi, null, null);
-
-        //Verdien skal legges først
-        else if (indeks == 0) {
-            hode = new Node<T>(verdi, null, hode);
-            hode.neste.forrige = hode;
-        }
-        //Verdien skal legges sist
-        else if (indeks == antall) {
-            hale = new Node<T>(verdi, hale, null);
-            hale.forrige.neste = hale;
-        }
-        //Verdien legges i midten
-        else {
-            Node<T> node = hode;
-            for (int i = 0; i < indeks; i++) {
-                node = node.neste;
-            }
-            node = new Node<T>(verdi, node.forrige, node);
-            node.neste.forrige = node.forrige.neste = node;
-        }
-        antall++;
-        endringer++;
+        throw new NotImplementedException();
     }
 
     @Override
     public boolean inneholder(T verdi) {
-        throw new NotImplementedException();
+        return indeksTil(verdi) != -1;
+      //  throw new NotImplementedException();
     }
 
     @Override
     public T hent(int indeks) {
-        throw new NotImplementedException();
+
+        Node<T> current = finnNode(indeks);
+
+        return current.verdi;
     }
 
     @Override
     public int indeksTil(T verdi) {
-        throw new NotImplementedException();
+        if (verdi == null) return -1;
+
+        Node <T> p=hode;
+        for (int i = 0; i< antall; i++, p = p.neste)
+        {
+            if (p.verdi.equals(verdi)) return i;
+        }
+
+        return -1;
     }
 
     @Override
     public T oppdater(int indeks, T nyverdi) {
-        throw new NotImplementedException();
+
+        Objects.requireNonNull(nyverdi);
+
+        Node<T> current = finnNode(indeks);
+
+        T gammelVerdi = current.verdi;
+        endringer++;
+
+        current.verdi = nyverdi;
+
+        return gammelVerdi;
     }
 
     @Override
     public boolean fjern(T verdi) {
-        if (verdi == null) return false;
-
-        Node<T> gjeldendeNode = hode;
-
-        while (gjeldendeNode != null) {
-            if (gjeldendeNode.verdi.equals(verdi)) {
-                break;
-            }
-
-            gjeldendeNode = gjeldendeNode.neste;
+        if (verdi == null) {
+            return false;
         }
 
-        if (gjeldendeNode == null) return false;
+        Node<T> current = hode;
 
-        if (gjeldendeNode == hode) { // Første node
-            hode = hode.neste;
-
-            if (hode != null) {
+        //Første fjernes
+        if (verdi.equals(current.verdi)) {
+            if (current.neste != null) {
+                hode = current.neste;
                 hode.forrige = null;
             } else {
+                hode = null;
                 hale = null;
             }
-        } else if (gjeldendeNode == hale) { // Siste node
-            hale = hale.forrige;
+            antall--;
+            endringer++;
+            return true;
+        }
+
+        //Siste fjernes
+        current = hale;
+        if (verdi.equals(current.verdi)) {
+            hale = current.forrige;
             hale.neste = null;
-        } else {
-            gjeldendeNode.forrige.neste = gjeldendeNode.neste;
-            gjeldendeNode.neste.forrige = gjeldendeNode.forrige;
+            antall--;
+            endringer++;
+            return true;
         }
 
-        gjeldendeNode.verdi = null;
-        gjeldendeNode.forrige = gjeldendeNode.neste = null;
-
-        antall--;
-        endringer++;
-
-        return true;
-    }
-
-    private Node<T> finnNode(int indeks) {
-        Node<T> returnNode;
-
-        if (indeks < antall / 2) {
-            returnNode = hode;
-            for (int i = 0; i < indeks; i++) returnNode = returnNode.neste;
-        } else {
-            returnNode = hale;
-            for (int i = antall - 1; i > indeks; i--) returnNode = returnNode.forrige;
+        //Mellom fjernes
+        current = hode.neste;
+        for (; current != null; current = current.neste) {
+            if (verdi.equals(current.verdi)) {
+                current.forrige.neste = current.neste;  //Noden til venstre for current peker på noden til høyre
+                current.neste.forrige = current.forrige;//Noden til høyre for current peker på noden til venstre
+                antall--;
+                endringer++;
+                return true;
+            }
         }
-
-        return returnNode;
-    }
-
-    private void indeksKontroll(int indeks) {
-        if (indeks < 0) {
-            throw new IndexOutOfBoundsException("Indeks " + indeks + " er negativ!");
-        } else if (indeks >= antall) {
-            throw new IndexOutOfBoundsException("Indeks " + indeks + " >= antall(" + antall + ") noder!");
-        }
+        return false;
     }
 
     @Override
     public T fjern(int indeks) {
-        indeksKontroll(indeks);
-        Node<T> temp;
+        indeksKontroll(indeks, false);
 
-        if (indeks == 0) { // Første node
-            temp = hode;
-            hode = hode.neste;
-            hode.forrige = null;
-        } else if (indeks == antall - 1) { // Siste node
-            temp = hale;
-            hale = hale.forrige;
-            hale.neste = null;
-        } else {
-            Node<T> p = finnNode(indeks - 1);
+        Node<T> current = hode;
+        T verdi;
 
-            temp = p.neste;
+        //Første fjernes
+        if (indeks == 0) {
+            verdi = current.verdi;
 
-            p.neste = p.neste.neste;
-            p.neste.forrige = p;
+            if (current.neste != null) {
+                hode = current.neste;
+                hode.forrige = null;
+            } else {
+                hode = null;
+                hale = null;
+            }
         }
 
+        //Siste fjernes
+        else if (indeks == antall - 1) {
+            current = hale;
+            verdi = hale.verdi;
+
+            hale = current.forrige;
+            hale.neste = null;
+        }
+
+        //Mellom fjernes
+        else {
+            for (int i = 0; i < indeks; i++) {
+                current = current.neste;
+            }
+            verdi = current.verdi;
+
+            current.forrige.neste = current.neste;  //Noden til venstre for current peker på noden til høyre
+            current.neste.forrige = current.forrige;//Noden til høyre for current peker på noden til venstre
+        }
 
         antall--;
         endringer++;
-        return temp.verdi;
+        return verdi;
     }
 
     @Override
