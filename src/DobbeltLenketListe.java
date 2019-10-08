@@ -31,10 +31,17 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         out.println(liste.omvendtString());
 
         /*
+        //Oppg 8 Main test
         String[] navn = {"Lars","Anders","Bodil","Kari","Per","Berit"};
         Liste<String> liste2 = new DobbeltLenketListe<>(navn);
-        liste2.forEach(s -> System.out.print(s + "​ ​"));   System.out.println();
+        liste2.forEach(s -> System.out.print(s + "​ ​")); System.out.println();
         for(String s: liste2) out.print(s + "​ ​");
+
+        //Oppg 9 Main test
+        DobbeltLenketListe<String> liste3 = new DobbeltLenketListe<>(new String[]{"Lars","Anders","Bodil","Kari","Per","Berit"});
+        liste.fjernHvis(navn -> navn.charAt(0) == 'B' ); // fjerner navn som starter med B
+        System.out.println(liste3 + " " + liste3.omvendtString());
+
          */
     }
 
@@ -478,7 +485,30 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
         @Override
         public void remove(){
-            throw new NotImplementedException();
+            Node<T> p = (denne == null ? hale : denne.forrige);
+            if(!fjernOK){
+                throw new IllegalStateException("Kan ikke fjerne noe element nå!");
+            }
+            if(iteratorendringer != endringer){
+                throw new ConcurrentModificationException("Listen er endret!");
+            }
+            fjernOK = false;
+
+            if (p == hode)
+            {
+                if (antall == 1){ hode = hale = null;}      // kun en verdi i listen
+                else{ hode = hode.neste; hode.forrige = null;}  // fjerner den første
+            }
+            else if (p == hale){ hale = hale.forrige; hale.neste = null;}  // fjerner den siste
+            else{
+                p.forrige.neste = p.neste;
+                p.neste.forrige = p.forrige;    // fjerner p
+            }
+
+            antall--;            // en mindre i listen
+            iteratorendringer++;
+            endringer++;         // en endring
+
         }
 
     } // class DobbeltLenketListeIterator
