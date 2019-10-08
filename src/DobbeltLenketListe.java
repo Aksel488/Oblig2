@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static java.lang.System.out;
 
 
 public class DobbeltLenketListe<T> implements Liste<T> {
@@ -22,12 +23,19 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         Character[] c = {'A','B','C','D','E','F','G','H','I','J'};
         DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
 
-        System.out.println(liste.fjern(0));
-        System.out.println(liste.fjern(2));
-        System.out.println(liste.fjern(liste.antall - 1));
+        out.println(liste.fjern(0));
+        out.println(liste.fjern(2));
+        out.println(liste.fjern(liste.antall - 1));
 
-        System.out.println(liste.toString());
-        System.out.println(liste.omvendtString());
+        out.println(liste.toString());
+        out.println(liste.omvendtString());
+
+        /*
+        String[] navn = {"Lars","Anders","Bodil","Kari","Per","Berit"};
+        Liste<String> liste2 = new DobbeltLenketListe<>(navn);
+        liste2.forEach(s -> System.out.print(s + "​ ​"));   System.out.println();
+        for(String s: liste2) out.print(s + "​ ​");
+         */
     }
 
     /**
@@ -422,35 +430,50 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new NotImplementedException();
+        return new DobbeltLenketListeIterator();
     }
 
     public Iterator<T> iterator(int indeks) {
-        throw new NotImplementedException();
+        indeksKontroll(indeks, false);
+        return new DobbeltLenketListeIterator(indeks);
     }
 
     private class DobbeltLenketListeIterator implements Iterator<T>
     {
-        private Node<T> denne;
+        private Node<T> denne; // nåværende node som itereres
         private boolean fjernOK;
         private int iteratorendringer;
 
         private DobbeltLenketListeIterator(){
-            throw new NotImplementedException();
+            denne = hode;     // p starter på den første i listen
+            fjernOK = false;  // blir sann når next() kalles
+            iteratorendringer = endringer;  // teller endringer
         }
 
         private DobbeltLenketListeIterator(int indeks){
-            throw new NotImplementedException();
+            denne = finnNode(indeks);     // p starter på indeks
+            fjernOK = false;  // blir sann når next() kalles
+            iteratorendringer = endringer;  // teller endringer
         }
 
         @Override
         public boolean hasNext(){
-            throw new NotImplementedException();
+            return denne != null;
         }
 
         @Override
         public T next(){
-            throw new NotImplementedException();
+            if (!hasNext()) throw new NoSuchElementException("Ingen verdier!");
+
+            if (endringer != iteratorendringer)
+                throw new ConcurrentModificationException("Listen er endret!");
+
+            T tempverdi = denne.verdi;
+            denne = denne.neste;
+
+            fjernOK = true;
+
+            return tempverdi;
         }
 
         @Override
