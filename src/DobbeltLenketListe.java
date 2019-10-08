@@ -192,7 +192,35 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public void leggInn(int indeks, T verdi) {
-        throw new NotImplementedException();
+        // Sjekker om verdien er nullobjekt
+        Objects.requireNonNull(verdi, "Verdien kan ikke være null");
+
+        //Sjekker størrelse på indeksen
+        if (indeks > antall){
+            throw new IndexOutOfBoundsException("Indeks er større enn antall noder");
+        } else if (indeks < 0) throw new IndexOutOfBoundsException("Indeksen kan ikke være negativ");
+
+        if (antall == 0 && indeks == 0) {
+            hode = hale = new Node<T>(verdi, null, null);
+        }
+        else if (indeks == antall) {
+            hale = new Node<T>(verdi, hale, null);
+            hale.forrige.neste = hale;
+        } else if (indeks == 0) {
+        hode = new Node<T>(verdi, null, hode);
+        hode.neste.forrige = hode;
+        }
+        else {
+            Node<T> node = hode;
+
+            for (int i = 0; i < indeks; i++) node = node.neste;{
+                node = new Node<T>(verdi, node.forrige, node);
+            }
+            node.neste.forrige = node.forrige.neste = node;
+        }
+
+        antall++;
+        endringer++;
     }
 
     @Override
@@ -330,7 +358,19 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public void nullstill() {
-        throw new NotImplementedException();
+        //Metode 1
+        for(Node<T> t = hode; t != null; t = t.neste) {
+            t.verdi = null;
+            t.forrige = t.neste = null;
+        }
+        hode = hale = null;
+        antall = 0;
+        endringer++;
+        /*Metode 2 funker men tar lengre tid, velger i dette tilfellet metode 1
+        for (Node<T> t = hode; t != null; t=t.neste){
+            fjern(0);
+        }
+         */
     }
 
     @Override
