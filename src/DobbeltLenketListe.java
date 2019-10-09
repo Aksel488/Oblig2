@@ -15,35 +15,16 @@ import java.util.function.Predicate;
 import static java.lang.System.out;
 
 
+/*
+Oppgaven er levert av følgende studenter:
+* Aksel Susegg, s325917
+* Sander Saether, s331358
+* Runar Sivertsen, s331414
+*/
+
+
 public class DobbeltLenketListe<T> implements Liste<T> {
 
-
-    public static void main(String[] args) {
-
-        Character[] c = {'A','B','C','D','E','F','G','H','I','J'};
-        DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
-
-        out.println(liste.fjern(0));
-        out.println(liste.fjern(2));
-        out.println(liste.fjern(liste.antall - 1));
-
-        out.println(liste.toString());
-        out.println(liste.omvendtString());
-
-        /*
-        //Oppg 8 Main test
-        String[] navn = {"Lars","Anders","Bodil","Kari","Per","Berit"};
-        Liste<String> liste2 = new DobbeltLenketListe<>(navn);
-        liste2.forEach(s -> System.out.print(s + "​ ​")); System.out.println();
-        for(String s: liste2) out.print(s + "​ ​");
-
-        //Oppg 9 Main test
-        DobbeltLenketListe<String> liste3 = new DobbeltLenketListe<>(new String[]{"Lars","Anders","Bodil","Kari","Per","Berit"});
-        liste.fjernHvis(navn -> navn.charAt(0) == 'B' ); // fjerner navn som starter med B
-        System.out.println(liste3 + " " + liste3.omvendtString());
-
-         */
-    }
 
     /**
      * Node class
