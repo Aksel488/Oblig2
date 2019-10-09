@@ -21,6 +21,7 @@ Oppgaven er levert av følgende studenter:
 * Sander Saether, s331358
 * Runar Sivertsen, s331414
 * Jørgen Røkke Bender, s331368
+* Sigmund William Cook, s329332
 */
 
 
