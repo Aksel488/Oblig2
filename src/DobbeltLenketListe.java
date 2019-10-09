@@ -20,6 +20,7 @@ Oppgaven er levert av følgende studenter:
 * Aksel Susegg, s325917
 * Sander Saether, s331358
 * Runar Sivertsen, s331414
+* Jørgen Røkke Bender, s331368
 */
 
 
