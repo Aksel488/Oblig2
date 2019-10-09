@@ -12,7 +12,7 @@ Oppgaven er levert av følgende studenter:
 
 I oppgaven har vi hatt følgende arbeidsfordeling:
 * Aksel har hatt hovedansvar for oppgave 1, 2, 3, 6. 
-* Sander har hatt hovedansvar for oppgave 
+* Sander har hatt hovedansvar for oppgave 4
 * Runar har hatt hovedansvar for oppgave 10.
 * Jørgen har hatt hovedansvar for oppgave 8, 9.
 * Sigmund har hatt hovedansvar for oppgave 5, 7.
